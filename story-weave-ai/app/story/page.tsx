@@ -42,6 +42,7 @@ const THEMES = [
   { id: "romance", icon: "💞", name: "Romance" },
 ];
 const LS_KEY = "storyweave_history";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://story-weave-ai.onrender.com";
 
 /* ─── Small atoms ─── */
 const StoryImage = ({ prompt, seed, alt }: { prompt: string, seed: number, alt: string }) => {
@@ -56,7 +57,7 @@ const StoryImage = ({ prompt, seed, alt }: { prompt: string, seed: number, alt: 
     
     const fetchImage = async (attempts = 3) => {
       try {
-        const url = `http://127.0.0.1:8000/proxy-image?prompt=${encodeURIComponent(prompt)}&seed=${seed}`;
+        const url = `${API_BASE_URL}/proxy-image?prompt=${encodeURIComponent(prompt)}&seed=${seed}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error("Failed to load");
         const blob = await res.blob();
@@ -227,7 +228,7 @@ function PremiumStoryWorkspace() {
     const langCode = languageToCode[storyLanguage] || "en-IN";
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/text-to-speech", {
+      const res = await fetch(`${API_BASE_URL}/text-to-speech`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text, language_code: langCode, speaker: "anushka" }),
@@ -299,7 +300,7 @@ function PremiumStoryWorkspace() {
     const usedLang = overrideLang || storyLanguage;
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/generate-story", {
+      const res = await fetch(`${API_BASE_URL}/generate-story`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ theme: usedTheme, keywords: usedKws.join(", "), language: usedLang, length: options.length, tone: usedTone }),
@@ -340,7 +341,7 @@ function PremiumStoryWorkspace() {
     setIsGeneratingComic(true);
     setComicPanels([]);
     try {
-      const res = await fetch("http://127.0.0.1:8000/generate-story-pages", {
+      const res = await fetch(`${API_BASE_URL}/generate-story-pages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ story: storyText, theme: themeStr }),
