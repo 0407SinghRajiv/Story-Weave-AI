@@ -15,7 +15,7 @@ if not api_key:
 
 client = Groq(api_key=api_key)
 
-def generate_story_from_llm(theme: str, keywords: str, language: str, length: str, tone: str) -> dict:
+def generate_story_from_llm(theme: str, keywords: str, language: str, length: str, tone: str, audience: str = "Kid (6-10 years)") -> dict:
     """
     Generates a story using Gemini 2.0 Flash for high-quality regional language support.
     """
@@ -26,25 +26,41 @@ def generate_story_from_llm(theme: str, keywords: str, language: str, length: st
     is_hindi = language.lower() == "hindi"
     
     prompt = f"""
-    You are a professional storyteller. Your task is to generate a structured story with a clear beginning, middle, and end.
-    
-    Strictly follow these requirements:
-    - Theme: {theme}
-    - Keywords: {keywords}
+    You are a professional children's book author and master storyteller. 
+    Your task is to generate a highly engaging, structured story tailored for a specific audience.
+
+    STORY SPECIFICATIONS:
+    - Target Audience: {audience}
     - Language: {language}
-    - Length: The story MUST be an exact approximation of the selected length: {length}.
-    - Tone: {tone}
-    - Narration: Engaging, highly creative, and maintaining a logical flow.
+    - Theme: {theme}
+    - Keywords to integrate: {keywords}
+    - Length: Approximately {length}
+    - Tone: {tone} (Adapt this tone appropriately for the {audience} age group)
+
+    STRICT NARRATIVE STRUCTURE:
+    The story MUST follow a classic narrative arc:
+    1. Introduction: Set the scene and introduce the main character(s).
+    2. Inciting Incident: A clear event that starts the adventure or problem.
+    3. Rising Action: A series of events (logical flow) that build tension or interest.
+    4. Climax: The peak of the story, most exciting part, or the moment the main problem is faced.
+    5. Falling Action: The immediate aftermath of the climax.
+    6. Resolution/Moral: A satisfying conclusion, often with a subtle lesson or a happy ending.
+
+    VOCABULARY & STYLE RULES:
+    - If Audience is "Toddler (3-5 years)": Use extremely simple, repetitive words, very short sentences, and basic concepts. Avoid any scary or complex themes.
+    - If Audience is "Kid (6-10 years)": Use clear, easy-to-understand language. Sentences should be varied but simple. Avoid advanced jargon or archaic words.
+    - If Audience is "Teen (11-15 years)": Use more descriptive vocabulary and more complex emotional themes.
+    - If Audience is "Adult": Use sophisticated language, complex metaphors, and mature themes.
 
     IMPORTANT: The entire JSON output including "title" and "story" MUST BE WRITTEN IN {language}. 
-    If the language is Hindi, the text must be in Devnagari script.
-    If the language is Bengali, use Bengali script, etc.
+    - If {language} is Hindi, use Devnagari script.
+    - If {language} is Bengali, use Bengali script, etc.
 
-    Please provide the output only as a valid JSON object with the keys "title" and "story". Do not include any extra text, only the JSON.
-    Example format:
+    Return ONLY a valid JSON object with keys "title" and "story". No other text.
+    Example:
     {{
-        "title": "A Creative Title in {language}",
-        "story": "The engaging narrative in {language} starts here..."
+        "title": "A Great Title",
+        "story": "The full narrative goes here..."
     }}
     """
 

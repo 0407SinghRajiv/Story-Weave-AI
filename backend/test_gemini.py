@@ -1,9 +1,16 @@
 import os
 from google import genai
 from google.genai import types
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def test_google_genai():
-    api_key = "AIzaSyCVN_l2Qn96rgHFB6V7N8rk7NbHbqH-IFA"
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        print("GEMINI_API_KEY not found in .env")
+        return False
+        
     try:
         client = genai.Client(api_key=api_key)
         # Test image generation with Imagen 3

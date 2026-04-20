@@ -121,6 +121,7 @@ function PremiumStoryWorkspace() {
   const initialLanguage = (searchParams.get("language") || "English") as Language;
   const initialLength = searchParams.get("length") || "Short (~500 words)";
   const initialTone = searchParams.get("tone") || "Whimsical";
+  const initialAudience = searchParams.get("audience") || "Kid (6-10 years)";
 
   /* ─── State ─── */
   const [storyLanguage, setStoryLanguage] = useState<Language>(initialLanguage);
@@ -135,6 +136,7 @@ function PremiumStoryWorkspace() {
 
   const [toneVal, setToneVal] = useState(50);
   const [tone, setTone] = useState(initialTone);
+  const [audience, setAudience] = useState(initialAudience);
   const options = useMemo(() => ({ length: initialLength }), [initialLength]);
 
   const [activeTab, setActiveTab] = useState<"audio" | "comic">("audio");
@@ -298,12 +300,13 @@ function PremiumStoryWorkspace() {
     const usedTone = overrideTone || tone;
     const usedKws = kws || keywords;
     const usedLang = overrideLang || storyLanguage;
+    const usedAudience = audience;
 
     try {
       const res = await fetch(`${API_BASE_URL}/generate-story`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ theme: usedTheme, keywords: usedKws.join(", "), language: usedLang, length: options.length, tone: usedTone }),
+        body: JSON.stringify({ theme: usedTheme, keywords: usedKws.join(", "), language: usedLang, length: options.length, tone: usedTone, audience: usedAudience }),
       });
       if (!res.ok) throw new Error();
       const data = await res.json();
