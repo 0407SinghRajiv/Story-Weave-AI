@@ -20,7 +20,6 @@ export default function HomePage() {
     language: "English",
     length: "Short (~500 words)",
     tone: "Whimsical",
-    audience: "Kid (6-10 years)"
   });
 
   const [story, setStory] = useState<string | null>(null);
@@ -35,7 +34,6 @@ export default function HomePage() {
       language: options.language,
       length: options.length,
       tone: options.tone,
-      audience: options.audience
     });
     router.push(`/story?${queryParams.toString()}&generate=true`);
   };

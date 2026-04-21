@@ -4,7 +4,6 @@ const FIELDS = [
   { key: "language", label: "Language", icon: "🌐", options: ["English", "Hindi", "Bengali", "Telugu", "Marathi", "Tamil", "Gujarati", "Kannada", "Malayalam", "Punjabi", "Spanish", "French"] },
   { key: "length", label: "Length", icon: "📏", options: ["Micro (~100 words)", "Short (~500 words)", "Medium (~1000 words)", "Epic (~2500 words)"] },
   { key: "tone", label: "Tone", icon: "🎭", options: ["Whimsical", "Dark", "Funny", "Dramatic", "Romantic", "Suspenseful"] },
-  { key: "audience", label: "Target Audience", icon: "👶", options: ["Toddler (3-5 years)", "Kid (6-10 years)", "Teen (11-15 years)", "Adult"] }
 ];
 
 import { useLanguage } from "@/contexts/LanguageContext";

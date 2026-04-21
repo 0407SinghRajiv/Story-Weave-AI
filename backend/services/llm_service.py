@@ -15,7 +15,7 @@ if not api_key:
 
 client = Groq(api_key=api_key)
 
-def generate_story_from_llm(theme: str, keywords: str, language: str, length: str, tone: str, audience: str = "Kid (6-10 years)") -> dict:
+def generate_story_from_llm(theme: str, keywords: str, language: str, length: str, tone: str) -> dict:
     """
     Generates a story using Gemini 2.0 Flash for high-quality regional language support.
     """
@@ -30,12 +30,12 @@ def generate_story_from_llm(theme: str, keywords: str, language: str, length: st
     Your task is to generate a highly engaging, structured story tailored for a specific audience.
 
     STORY SPECIFICATIONS:
-    - Target Audience: {audience}
+    - Target Audience: Children (3-10 years old)
     - Language: {language}
     - Theme: {theme}
     - Keywords to integrate: {keywords}
     - Length: Approximately {length}
-    - Tone: {tone} (Adapt this tone appropriately for the {audience} age group)
+    - Tone: {tone} (Adapt this tone appropriately for a child audience)
 
     STRICT NARRATIVE STRUCTURE:
     The story MUST follow a classic narrative arc:
@@ -47,10 +47,12 @@ def generate_story_from_llm(theme: str, keywords: str, language: str, length: st
     6. Resolution/Moral: A satisfying conclusion, often with a subtle lesson or a happy ending.
 
     VOCABULARY & STYLE RULES:
-    - If Audience is "Toddler (3-5 years)": Use extremely simple, repetitive words, very short sentences, and basic concepts. Avoid any scary or complex themes.
-    - If Audience is "Kid (6-10 years)": Use clear, easy-to-understand language. Sentences should be varied but simple. Avoid advanced jargon or archaic words.
-    - If Audience is "Teen (11-15 years)": Use more descriptive vocabulary and more complex emotional themes.
-    - If Audience is "Adult": Use sophisticated language, complex metaphors, and mature themes.
+    - Target: Children aged 3 to 10 years.
+    - Use extremely clear, simple, and easy-to-understand language.
+    - Sentences should be short to moderate in length.
+    - ABSOLUTELY NO jargon, difficult words, archaic language, or complex mature themes.
+    - If there are complex concepts, explain them in very simple terms or avoid them entirely.
+    - Focus on wonder, learning, and fun.
 
     IMPORTANT: The entire JSON output including "title" and "story" MUST BE WRITTEN IN {language}. 
     - If {language} is Hindi, use Devnagari script.

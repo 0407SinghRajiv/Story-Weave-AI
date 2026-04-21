@@ -121,7 +121,6 @@ function PremiumStoryWorkspace() {
   const initialLanguage = (searchParams.get("language") || "English") as Language;
   const initialLength = searchParams.get("length") || "Short (~500 words)";
   const initialTone = searchParams.get("tone") || "Whimsical";
-  const initialAudience = searchParams.get("audience") || "Kid (6-10 years)";
 
   /* ─── State ─── */
   const [storyLanguage, setStoryLanguage] = useState<Language>(initialLanguage);
@@ -136,7 +135,6 @@ function PremiumStoryWorkspace() {
 
   const [toneVal, setToneVal] = useState(50);
   const [tone, setTone] = useState(initialTone);
-  const [audience, setAudience] = useState(initialAudience);
   const options = useMemo(() => ({ length: initialLength }), [initialLength]);
 
   const [activeTab, setActiveTab] = useState<"audio" | "comic">("audio");
@@ -184,6 +182,7 @@ function PremiumStoryWorkspace() {
   /* Library */
   const [history, setHistory] = useState<SavedStory[]>([]);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [generationTime, setGenerationTime] = useState<number | null>(null);
   useEffect(() => { setHistory(loadHistory()); }, []);
 
   /* Derived */
@@ -290,7 +289,9 @@ function PremiumStoryWorkspace() {
 
   /* ─── API call ─── */
   const generate = useCallback(async (kws?: string[], overrideTheme?: string, overrideTone?: string, overrideLang?: string) => {
+    const startTime = performance.now();
     setIsGenerating(true);
+    setGenerationTime(null);
     setGeneratedStory("");
     setStoryTitle("Weaving your tale…");
     setIsEditing(false);
@@ -300,13 +301,12 @@ function PremiumStoryWorkspace() {
     const usedTone = overrideTone || tone;
     const usedKws = kws || keywords;
     const usedLang = overrideLang || storyLanguage;
-    const usedAudience = audience;
 
     try {
       const res = await fetch(`${API_BASE_URL}/generate-story`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ theme: usedTheme, keywords: usedKws.join(", "), language: usedLang, length: options.length, tone: usedTone, audience: usedAudience }),
+        body: JSON.stringify({ theme: usedTheme, keywords: usedKws.join(", "), language: usedLang, length: options.length, tone: usedTone }),
       });
       if (!res.ok) throw new Error();
       const data = await res.json();
@@ -314,6 +314,9 @@ function PremiumStoryWorkspace() {
       const title = data.title || usedTheme;
       setGeneratedStory(story);
       setStoryTitle(title);
+      
+      const endTime = performance.now();
+      setGenerationTime(Math.round(((endTime - startTime) / 1000) * 10) / 10);
 
       executeComicGeneration(story, title, usedTheme);
 
@@ -509,7 +512,7 @@ function PremiumStoryWorkspace() {
   return (
     <>
       <Navbar />
-      <div className="workspace-container" style={{ display: "flex", flexDirection: "column", padding: "20px 28px", maxWidth: "1700px", margin: "0 auto", width: "100%", boxSizing: "border-box", minHeight: "calc(100vh - 88px)" }}>
+      <div className="workspace-container" style={{ display: "flex", flexDirection: "column", padding: "20px 28px", maxWidth: "1700px", margin: "0 auto", width: "100%", boxSizing: "border-box", height: "calc(100vh - 88px)", overflow: "hidden" }}>
         <motion.div
           initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="workspace-grid"
@@ -636,6 +639,11 @@ function PremiumStoryWorkspace() {
                   <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "16px", fontWeight: 700, color: "#fff", letterSpacing: "0.04em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{storyTitle}</h1>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
+                  {generationTime !== null && (
+                    <span style={{ fontSize: "11px", color: "var(--accent-gold)", background: "rgba(255, 201, 102, 0.1)", borderRadius: "20px", padding: "3px 10px", fontWeight: 600 }}>
+                      Generated in {generationTime}s
+                    </span>
+                  )}
                   {!isGenerating && <span style={{ fontSize: "11px", color: "var(--text-muted)", background: "rgba(255,255,255,0.04)", borderRadius: "20px", padding: "3px 10px" }}><Hash size={10} /> {wordCount} words</span>}
                 </div>
               </div>

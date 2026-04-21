@@ -53,7 +53,6 @@ class StoryRequest(BaseModel):
     language: str = Field(..., description="The language the story should be written in")
     length: str = Field(..., description="The desired length of the story")
     tone: str = Field(..., description="The tone of the story")
-    audience: str = Field(default="Kid (6-10 years)", description="The target audience for the story")
 
 class ComicRequest(BaseModel):
     story: str = Field(..., description="The generated story to create a comic for")
@@ -160,7 +159,6 @@ async def generate_story(request: StoryRequest):
             language=request.language,
             length=canonical_length,
             tone=request.tone,
-            audience=request.audience
         )
         if "error" in response:
             raise HTTPException(status_code=500, detail=response["error"])
