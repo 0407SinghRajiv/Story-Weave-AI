@@ -69,7 +69,10 @@ export default function KeywordInput({ keywords, setKeywords }: KeywordInputProp
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') handleAddKeyword();
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleAddKeyword();
+            }
           }}
           onFocus={(e) => { e.currentTarget.style.borderColor = 'rgba(113, 72, 252, 0.7)'; }}
           onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(113, 72, 252, 0.4)'; }}

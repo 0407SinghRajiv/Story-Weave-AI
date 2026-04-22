@@ -454,12 +454,24 @@ function PremiumStoryWorkspace() {
   useEffect(() => {
     if (initRef.current) return;
     initRef.current = true;
+    const id = searchParams.get("id");
     const shouldGenerate = searchParams.get("generate") === "true";
+
     if (shouldGenerate) {
       const url = new URL(window.location.href);
       url.searchParams.delete("generate");
       window.history.replaceState({}, "", url.toString());
       generate(undefined, undefined, undefined, initialLanguage);
+    } else if (id) {
+      const h = loadHistory();
+      const story = h.find(s => s.id === id);
+      if (story) {
+        loadFromHistory(story);
+      } else if (h.length > 0) {
+        loadFromHistory(h[0]);
+      } else {
+        generate(undefined, undefined, undefined, initialLanguage);
+      }
     } else {
       const h = loadHistory();
       if (h.length > 0) loadFromHistory(h[0]);
@@ -468,9 +480,12 @@ function PremiumStoryWorkspace() {
   }, []); // eslint-disable-line
 
   const addKw = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && kwInput.trim()) {
-      setKeywords(p => [...p, kwInput.trim()]);
-      setKwInput("");
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (kwInput.trim()) {
+        setKeywords(p => [...p, kwInput.trim()]);
+        setKwInput("");
+      }
     }
   };
 

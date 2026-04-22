@@ -1,11 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { SignInButton, SignUpButton, useAuth, UserButton } from "@clerk/nextjs";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Menu, X } from "lucide-react";
 
 export default function Navbar() {
+  const pathname = usePathname();
   const { t } = useLanguage();
   const { isSignedIn } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,9 +29,9 @@ export default function Navbar() {
       </button>
 
       <div className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
-        <Link href="/" className="nav-link active" onClick={() => setIsMenuOpen(false)}>{t("Home")}</Link>
-        <Link href="/library" className="nav-link" onClick={() => setIsMenuOpen(false)}>{t("Library")}</Link>
-        <Link href="/about" className="nav-link" onClick={() => setIsMenuOpen(false)}>{t("About")}</Link>
+        <Link href="/" className={`nav-link ${pathname === "/" ? "active" : ""}`} onClick={() => setIsMenuOpen(false)}>{t("Home")}</Link>
+        <Link href="/library" className={`nav-link ${pathname === "/library" ? "active" : ""}`} onClick={() => setIsMenuOpen(false)}>{t("Library")}</Link>
+        <Link href="/about" className={`nav-link ${pathname === "/about" ? "active" : ""}`} onClick={() => setIsMenuOpen(false)}>{t("About")}</Link>
       </div>
 
       <div className={`nav-right ${isMenuOpen ? 'open' : ''}`}>
