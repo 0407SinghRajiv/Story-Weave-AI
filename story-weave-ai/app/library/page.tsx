@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   BookOpen, Clock, Trash, Search, Filter, 
@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { useLanguage } from "@/contexts/LanguageContext";
+import Link from "next/link";
 
 /* ─── Types ─── */
 interface ComicPanel {
@@ -30,6 +31,7 @@ interface SavedStory {
 const LS_KEY = "storyweave_history";
 
 export default function LibraryPage() {
+  const router = useRouter();
   const { t } = useLanguage();
   const [stories, setStories] = useState<SavedStory[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -200,9 +202,12 @@ export default function LibraryPage() {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}
                   whileHover={{ y: -8 }}
+                  style={{ position: "relative" }}
                 >
-                  <Link href={`/story?id=${story.id}`} style={{ textDecoration: "none" }}>
-                    <div className="theme-card" style={{ 
+                  <div className="theme-card" 
+                    onClick={() => router.push(`/story?id=${story.id}`)}
+                    style={{ 
+                      cursor: "pointer",
                       height: "100%", 
                       display: "flex", 
                       flexDirection: "column",
@@ -216,22 +221,8 @@ export default function LibraryPage() {
                             {getThemeIcon(story.theme)}
                           </span>
                         </div>
-                        <button 
-                          onClick={(e) => deleteStory(e, story.id)}
-                          style={{
-                            background: "rgba(255, 68, 68, 0.1)",
-                            border: "none",
-                            padding: "8px",
-                            borderRadius: "10px",
-                            color: "#ff4444",
-                            cursor: "pointer",
-                            transition: "background 0.3s ease"
-                          }}
-                          onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255, 68, 68, 0.2)"}
-                          onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255, 68, 68, 0.1)"}
-                        >
-                          <Trash size={16} />
-                        </button>
+                        {/* Placeholder for visual balance, actual delete button is absolutely positioned below */}
+                        <div style={{ width: "32px" }} />
                       </div>
 
                       <h3 style={{ 
@@ -295,8 +286,39 @@ export default function LibraryPage() {
                           </span>
                         </div>
                       </div>
-                    </div>
-                  </Link>
+                  </div>
+
+                  {/* Absolute Delete Button — outside the clickable card div */}
+                  <button 
+                    onClick={(e) => deleteStory(e, story.id)}
+                    style={{
+                      position: "absolute",
+                      top: "24px",
+                      right: "24px",
+                      zIndex: 10,
+                      background: "rgba(255, 68, 68, 0.1)",
+                      border: "1px solid rgba(255, 68, 68, 0.2)",
+                      padding: "8px",
+                      borderRadius: "10px",
+                      color: "#ff4444",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "rgba(255, 68, 68, 0.3)";
+                      e.currentTarget.style.transform = "scale(1.1)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "rgba(255, 68, 68, 0.1)";
+                      e.currentTarget.style.transform = "scale(1)";
+                    }}
+                    title="Delete Story"
+                  >
+                    <Trash size={16} />
+                  </button>
                 </motion.div>
               ))}
             </AnimatePresence>

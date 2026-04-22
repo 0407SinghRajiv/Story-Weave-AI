@@ -318,11 +318,10 @@ function PremiumStoryWorkspace() {
       const endTime = performance.now();
       setGenerationTime(Math.round(((endTime - startTime) / 1000) * 10) / 10);
 
-      executeComicGeneration(story, title, usedTheme);
-
       /* ── Save to localStorage ── */
+      const storyId = Date.now().toString();
       const entry: SavedStory = {
-        id: Date.now().toString(),
+        id: storyId,
         title,
         story,
         theme: usedTheme,
@@ -333,6 +332,8 @@ function PremiumStoryWorkspace() {
       };
       saveToHistory(entry);
       setHistory(loadHistory());
+
+      executeComicGeneration(story, title, usedTheme, storyId);
     } catch {
       const fallback = "The year was 2342. On Titan, Saturn's largest moon, Detective Alex Thorne gazed out at the methane lakes shimmering under a distant sun.\n\nAs he stepped outside the station, the frost crunched beneath his boots. A message blinked on his wrist display — unknown sender, no coordinates. Just three words:\n\n\"They are watching.\"\n\nThorne closed his coat against the bitter cold and began to walk.";
       setGeneratedStory(fallback);
@@ -343,7 +344,7 @@ function PremiumStoryWorkspace() {
   }, [theme, keywords, options, tone, stopSpeaking, storyLanguage]); // eslint-disable-line
 
   /* ─── Story Pages & PDF ─── */
-  const executeComicGeneration = async (storyText: string, title: string, themeStr: string) => {
+  const executeComicGeneration = async (storyText: string, title: string, themeStr: string, storyId?: string) => {
     setIsGeneratingComic(true);
     setComicPanels([]);
     try {
@@ -367,8 +368,9 @@ function PremiumStoryWorkspace() {
 
       setHistory(prev => {
         const h = [...prev];
-        if (h.length > 0) {
-          h[0].comicPanels = panels;
+        const idx = storyId ? h.findIndex(s => s.id === storyId) : h.findIndex(s => s.story === storyText);
+        if (idx !== -1) {
+          h[idx].comicPanels = panels;
           localStorage.setItem(LS_KEY, JSON.stringify(h));
         }
         return h;
@@ -503,6 +505,7 @@ function PremiumStoryWorkspace() {
     setKeywords(s.keywords ? s.keywords.split(",").map(k => k.trim()) : []);
     setComicPanels(s.comicPanels || []);
     setIsEditing(false);
+    setIsGenerating(false);
   };
 
   const requestDelete = (e: React.MouseEvent, id: string) => {
