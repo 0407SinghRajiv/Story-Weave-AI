@@ -46,6 +46,13 @@ def generate_story_from_llm(theme: str, keywords: str, language: str, length: st
     5. Falling Action: The immediate aftermath of the climax.
     6. Resolution/Moral: A satisfying conclusion, often with a subtle lesson or a happy ending.
 
+    LENGTH & DETAIL RULES (CRITICAL):
+    - You MUST aim to meet the requested length of {length}. 
+    - If the requested length is long (e.g., 500+ words), do NOT just summarize the plot. Instead, "show, don't just tell."
+    - Achieve length by adding simple, vivid descriptions of the setting, the characters' feelings, and what they see/hear.
+    - Use simple dialogue between characters to make the story feel alive.
+    - Ensure EVERY stage of the narrative arc (Introduction to Resolution) is fully fleshed out with enough detail to reach the word count.
+
     VOCABULARY & STYLE RULES:
     - Target: Children aged 3 to 10 years.
     - Use extremely clear, simple, and easy-to-understand language.

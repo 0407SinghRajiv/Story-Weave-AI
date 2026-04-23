@@ -44,6 +44,21 @@ const THEMES = [
 const LS_KEY = "storyweave_history";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://story-weave-ai.onrender.com";
 
+const LOADING_MESSAGES = [
+  "Weaving Magic...",
+  "Stirring the Ink...",
+  "Drawing Characters...",
+  "Imagining Worlds...",
+  "Sprinkling Stardust...",
+  "Whispering to the Winds...",
+  "Crafting Adventures...",
+  "Mixing the Paint...",
+  "Polishing the Plot...",
+  "Taming the Dragons...",
+  "Consulting the Wizards...",
+  "Adding a Pinch of Wonder..."
+];
+
 /* ─── Small atoms ─── */
 const StoryImage = ({ prompt, seed, alt }: { prompt: string, seed: number, alt: string }) => {
   const [src, setSrc] = useState<string | null>(null);
@@ -183,7 +198,19 @@ function PremiumStoryWorkspace() {
   const [history, setHistory] = useState<SavedStory[]>([]);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [generationTime, setGenerationTime] = useState<number | null>(null);
+  const [loadingMsgIndex, setLoadingMsgIndex] = useState(0);
   useEffect(() => { setHistory(loadHistory()); }, []);
+
+  /* ─── Loading Message Interval ─── */
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isGenerating || isGeneratingComic) {
+      interval = setInterval(() => {
+        setLoadingMsgIndex(prev => (prev + 1) % LOADING_MESSAGES.length);
+      }, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [isGenerating, isGeneratingComic]);
 
   /* Derived */
   const wordCount = useMemo(() => generatedStory.split(/\s+/).filter(Boolean).length, [generatedStory]);
@@ -672,7 +699,18 @@ function PremiumStoryWorkspace() {
                     {isGenerating ? (
                       <motion.div key="loading-story" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: "60px", gap: "24px" }}>
                         <Sparkles size={32} style={{ color: "var(--accent-gold)" }} className="animate-pulse" />
-                        <p style={{ fontFamily: "Cinzel, serif", fontSize: "12px", fontWeight: 700, color: "rgba(255,255,255,0.5)" }}>Weaving Magic…</p>
+                        <AnimatePresence mode="wait">
+                          <motion.p
+                            key={loadingMsgIndex}
+                            initial={{ opacity: 0, y: 5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -5 }}
+                            transition={{ duration: 0.5 }}
+                            style={{ fontFamily: "Cinzel, serif", fontSize: "14px", fontWeight: 700, color: "rgba(255,255,255,0.7)", letterSpacing: "0.05em" }}
+                          >
+                            {LOADING_MESSAGES[loadingMsgIndex]}
+                          </motion.p>
+                        </AnimatePresence>
                       </motion.div>
                     ) : isEditing ? (
                       <motion.textarea
